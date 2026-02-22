@@ -1,13 +1,14 @@
 "use client";
 import { useState } from "react";
 import Preloader from "@/components/Preloader";
-import Hero from "@/components/Hero";
-import Projects from "@/components/Projects";
 import LogoButton from "@/components/LogoButton";
+import Hero from "@/components/Hero";
+import Product from "@/components/Product";
+import Partners from "@/components/Partners";
+import Projects from "@/components/Projects";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ListIcon } from "@phosphor-icons/react";
-import Footer from "@/components/Footer";
-import Product from "@/components/Product";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,7 @@ export default function Home() {
 
         <Hero />
         <Product />
+        <Partners />
         <Projects />
         <Footer />
 
