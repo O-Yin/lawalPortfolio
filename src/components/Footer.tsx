@@ -12,7 +12,9 @@ interface FooterProps {
   className?: string;
 }
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(useGSAP, ScrollTrigger);
+}
 
 const TAGLINE_WORDS = BRAND.tagline;
 const SOCIAL_LINKS = Object.values(BRAND.socials);
@@ -205,7 +207,7 @@ function Footer({ className }: FooterProps) {
             {BRAND_LETTERS.map((letter, i) => (
               <div key={i} className="flex-1 flex flex-col">
                 <span className="text-xs sm:text-sm font-semibold tracking-tight px-4 pb-2">
-                  {TAGLINE_WORDS[i]}
+                  {TAGLINE_WORDS[i] ?? ""}
                 </span>
                 <div className="relative aspect-square border border-background/20 bg-background flex-center">
                   <span className="footer-letter text-foreground font-semibold text-[min(18vw,12rem)] leading-none select-none inline-block">
