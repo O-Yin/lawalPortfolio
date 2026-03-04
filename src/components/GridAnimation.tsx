@@ -5,7 +5,9 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(useGSAP, ScrollTrigger);
+}
 
 // Resting V-shape profile (as % of full-screen container height).
 // Intentionally capped near ~2/3 so the blackout can "close" to 100% on scroll.
@@ -16,13 +18,32 @@ const COLUMN_COUNT = V_HEIGHTS.length;
 const CENTER = (COLUMN_COUNT - 1) / 2;
 
 function getColumnConfig(i: number) {
-  const height = V_HEIGHTS[i];
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const isSE =
+    typeof window !== "undefined" &&
+    window.innerHeight < 670 &&
+    window.innerWidth < 400;
+
+  const rawHeight = V_HEIGHTS[i];
+  // On mobile, reduce the base height so it doesn't take up too much vertical space
+  const height = isSE
+    ? rawHeight * 0.5
+    : isMobile
+      ? rawHeight * 0.65
+      : rawHeight;
+
   // yPercent 0 = full coverage, yPercent -100 = empty.
-  // A column at 80% height means the shutter is shifted up 20% → yPercent: -20
   const base = -(100 - height);
 
   const dist = Math.abs(i - CENTER) / CENTER;
-  const oscillation = 6 + dist * 10;
+  // Reduce oscillation magnitude on mobile to complement the scaled-down heights
+  const baseOscillation = 6 + dist * 10;
+  const oscillation = isSE
+    ? baseOscillation * 0.5
+    : isMobile
+      ? baseOscillation * 0.7
+      : baseOscillation;
+
   const speed = 2.2 + Math.random() * 2.3;
   const delay = Math.random() * 1.5;
 
@@ -32,7 +53,7 @@ function getColumnConfig(i: number) {
   return { lo, hi, speed, delay };
 }
 
-const COLUMN_CONFIGS = V_HEIGHTS.map((_, i) => getColumnConfig(i));
+// COLUMN_CONFIGS removed from module level to avoid hydration mismatches.
 
 interface GridAnimationProps {
   ready?: boolean;
@@ -41,22 +62,28 @@ interface GridAnimationProps {
   scrubStart?: boolean;
 }
 
-const GridAnimation = ({ 
-  ready = true, 
-  triggerRef, 
-  invertDirection = false, 
-  scrubStart = false 
+const GridAnimation = ({
+  ready = true,
+  triggerRef,
+  invertDirection = false,
+  scrubStart = false,
 }: GridAnimationProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      const shutters = gsap.utils.toArray<HTMLDivElement>(".grid-shutter");
+      const shutters = gsap.utils.toArray<HTMLDivElement>(
+        ".grid-shutter",
+        containerRef.current,
+      );
+
+      const COLUMN_CONFIGS = V_HEIGHTS.map((_, i) => getColumnConfig(i));
+
       const oscillationTweens: gsap.core.Tween[] = [];
       let introTimeline: gsap.core.Timeline | null = null;
       let scrubTimeline: gsap.core.Timeline | null = null;
 
-      const triggerEl = containerRef.current;
+      const triggerEl = triggerRef?.current ?? containerRef.current;
       if (!triggerEl) return;
 
       const setOscillationPaused = (paused: boolean) => {
@@ -87,29 +114,33 @@ const GridAnimation = ({
         // --- PARTNERS SECTION MODE (Scrub to Open) ---
         gsap.set(shutters, { yPercent: 0 }); // Start fully closed
         setOscillationPaused(true);
+        if (!ready) return;
 
         // Scrub timeline gradually moves the shutters to their `hi` target config
         scrubTimeline = gsap.timeline({
           scrollTrigger: {
             trigger: triggerEl,
-            start: "top bottom", // Starts as soon as the top of container hits the bottom of viewport
-            end: "14% top",     // Ends when 20% of the container has scrolled past the top
+            start: "top bottom",
+            end: "10% top",
             scrub: true,
             onEnter: () => setOscillationPaused(true),
             onLeave: () => setOscillationPaused(false), // Resume oscillation when fully opened
             onEnterBack: () => setOscillationPaused(true),
             // if we scroll all the way back up, it stays closed
-          }
+          },
         });
 
         shutters.forEach((shutter, i) => {
           const { hi } = COLUMN_CONFIGS[i];
-          scrubTimeline?.to(shutter, {
-            yPercent: hi,
-            ease: "none",
-          }, 0); // all start at time 0
+          scrubTimeline?.to(
+            shutter,
+            {
+              yPercent: hi,
+              ease: "none",
+            },
+            0,
+          );
         });
-
       } else {
         // --- HERO SECTION MODE (Normal Intro) ---
         let capturedHeights: number[] = [];
@@ -206,20 +237,28 @@ const GridAnimation = ({
         };
 
         initScrollState();
-        const timer = setTimeout(st.refresh, 100);
-        return () => clearTimeout(timer);
+        const timer = setTimeout(() => st.refresh(), 100);
+        return () => {
+          clearTimeout(timer);
+          st.kill();
+        };
       }
     },
     { scope: containerRef, dependencies: [ready, triggerRef, scrubStart] },
   );
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className={`flex h-full w-full ${invertDirection ? "rotate-180" : ""}`}
     >
       {[...Array(COLUMN_COUNT)].map((_, i) => (
-        <div key={i} className="relative h-full flex-1 overflow-hidden">
+        <div
+          key={i}
+          className={`relative h-full flex-1 overflow-hidden ${
+            i % 2 !== 0 ? "max-md:hidden" : ""
+          }`}
+        >
           <div className="grid-shutter absolute inset-0 bg-foreground" />
         </div>
       ))}
