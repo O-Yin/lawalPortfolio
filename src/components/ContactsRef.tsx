@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
+import { SpeakerHighIcon, SpeakerSlashIcon } from "@phosphor-icons/react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import ContactButtons from "./ui/ContactButtons";
 import { Button } from "./ui/button";
@@ -32,35 +32,7 @@ function ContactsRef() {
     return saved !== null ? saved === "true" : true;
   });
 
-  // Persist preference
-  useEffect(() => {
-    localStorage.setItem("ambientAudioEnabled", String(ambientAudioEnabled));
-
-    if (!ambientAudioEnabled || prefersReducedMotion) {
-      if (gainNodeRef.current) {
-        gsap.to(gainNodeRef.current.gain, {
-          value: 0,
-          duration: 0.5,
-          ease: "power2.out",
-        });
-      }
-    } else {
-      // If we're enabling audio and the section is active, start playing
-      const trigger = ScrollTrigger.getById("contact-audio-trigger");
-      if (trigger?.isActive) {
-        initAudio();
-        if (gainNodeRef.current) {
-          gsap.to(gainNodeRef.current.gain, {
-            value: 0.1,
-            duration: 1,
-            ease: "power2.inOut",
-          });
-        }
-      }
-    }
-  }, [ambientAudioEnabled, prefersReducedMotion]);
-
-  const initAudio = () => {
+  const initAudio = useCallback(() => {
     if (prefersReducedMotion || !ambientAudioEnabled) return;
 
     // If context exists and is running/suspended, we're good. If it's closed, we need a new one.
@@ -98,7 +70,35 @@ function ContactsRef() {
     filter.connect(gainNode);
     gainNode.connect(ctx.destination);
     source.start();
-  };
+  }, [prefersReducedMotion, ambientAudioEnabled]);
+
+  // Persist preference
+  useEffect(() => {
+    localStorage.setItem("ambientAudioEnabled", String(ambientAudioEnabled));
+
+    if (!ambientAudioEnabled || prefersReducedMotion) {
+      if (gainNodeRef.current) {
+        gsap.to(gainNodeRef.current.gain, {
+          value: 0,
+          duration: 0.5,
+          ease: "power2.out",
+        });
+      }
+    } else {
+      // If we're enabling audio and the section is active, start playing
+      const trigger = ScrollTrigger.getById("contact-audio-trigger");
+      if (trigger?.isActive) {
+        initAudio();
+        if (gainNodeRef.current) {
+          gsap.to(gainNodeRef.current.gain, {
+            value: 0.1,
+            duration: 1,
+            ease: "power2.inOut",
+          });
+        }
+      }
+    }
+  }, [ambientAudioEnabled, prefersReducedMotion, initAudio]);
 
   useEffect(() => {
     const handleGlobalInteraction = () => {
@@ -207,11 +207,16 @@ function ContactsRef() {
             onClick={() => setAmbientAudioEnabled(!ambientAudioEnabled)}
             className="rounded-full bg-background/5 border border-background/10 text-background/40 hover:text-background/90"
             title={ambientAudioEnabled ? "Mute audio" : "Unmute audio"}
+            aria-label={
+              ambientAudioEnabled
+                ? "Mute ambient audio"
+                : "Unmute ambient audio"
+            }
           >
             {ambientAudioEnabled && !prefersReducedMotion ? (
-              <SpeakerHigh weight="bold" />
+              <SpeakerHighIcon weight="bold" />
             ) : (
-              <SpeakerSlash weight="bold" />
+              <SpeakerSlashIcon weight="bold" />
             )}
           </Button>
           <ContactButtons />
