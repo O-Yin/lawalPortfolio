@@ -5,8 +5,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { COMPETENCIES } from "@/app/constants/competencies";
-import { BRAND_STATS } from "@/app/constants/stats";
-import Clients from "./AboutClients";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -14,9 +13,12 @@ if (typeof window !== "undefined") {
 
 export default function Competence() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useGSAP(
     () => {
+      if (prefersReducedMotion) return;
+
       gsap.fromTo(
         ".competency-card",
         { opacity: 0, y: 32 },
@@ -32,24 +34,8 @@ export default function Competence() {
           },
         },
       );
-
-      gsap.fromTo(
-        ".stat-pill",
-        { opacity: 0, y: 16 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power2.out",
-          stagger: 0.08,
-          scrollTrigger: {
-            trigger: ".stats-strip",
-            start: "top 85%",
-          },
-        },
-      );
     },
-    { scope: sectionRef },
+    { scope: sectionRef, dependencies: [prefersReducedMotion] },
   );
 
   return (
