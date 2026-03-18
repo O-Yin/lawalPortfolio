@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ADAPTABILITY_ITEMS } from "@/app/constants/competencies";
 import { BRAND } from "@/app/constants/brand";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -13,9 +14,12 @@ if (typeof window !== "undefined") {
 
 export default function Adaptability() {
   const sectionRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useGSAP(
     () => {
+      if (prefersReducedMotion) return;
+
       gsap.fromTo(
         ".adapt-card",
         { opacity: 0, y: 28 },
@@ -95,7 +99,7 @@ export default function Adaptability() {
           </div>
 
           {/* Narrative — Veil style */}
-          <div className="flex flex-col gap-8 justify-center">
+          <div className="adapt-text flex flex-col gap-8 justify-center">
             <div className="flex flex-col gap-5">
               <h3 className="text-primary font-semibold text-xl md:text-2xl leading-snug">
                 Engineered by curiosity.
