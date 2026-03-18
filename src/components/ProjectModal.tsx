@@ -219,7 +219,7 @@ export function ProjectModal({ isOpen, onClose }: ProjectModalProps) {
         style={
           {
             "--sq1-height": "2.75rem",
-            "--sq1-width": "7rem",
+            "--sq1-width": "8.15rem",
             "--sq-pos": "1.125rem",
             "--sq2-bottom": "calc(var(--sq-pos) + var(--sq1-height))",
             "--sq2-right": "calc(var(--sq-pos) + var(--sq1-width))",

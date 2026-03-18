@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  ArrowArcRightIcon,
   ArrowUpRightIcon,
   GithubLogoIcon,
   ListIcon,
   XIcon,
 } from "@phosphor-icons/react";
+import { scrollToAnchor } from "@/lib/navigation";
 import LogoButton from "./LogoButton";
 import { Button, buttonVariants } from "./ui/button";
 import { MenuOverlay } from "./MenuOverlay";
 import { ProjectModal } from "./ProjectModal";
+import Magnetic from "./ui/Magnetic";
 import { BRAND } from "../app/constants/brand";
 import { PROJECTS } from "../app/constants/projects";
 
@@ -31,27 +32,14 @@ const Navbar = ({ ready = true }: NavbarProps) => {
     ? PROJECTS.find((p) => p.slug === projectSlug)
     : null;
 
-  // Handle smooth scrolling for anchor links
-  const scrollToAnchor = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    id: string,
-  ) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - 100,
-        behavior: "smooth",
-      });
-    }
-  };
-
   return (
     <div>
       {/* Logo Button */}
       {ready && (
         <div className="logo-btn fixed top-4.5 left-4.5 z-20 transition-opacity duration-200 shadow-sm">
-          <LogoButton ready />
+          <Magnetic>
+            <LogoButton ready />
+          </Magnetic>
         </div>
       )}
 
@@ -68,30 +56,34 @@ const Navbar = ({ ready = true }: NavbarProps) => {
             onClose={() => setIsProjectOpen(false)}
           />
           <div className="max-w-30 xl:max-w-70 w-full">
-            <Button
-              variant="outline"
-              size="icon-lg"
-              className={`relative px-1! ${!isProjectOpen ? "z-21" : "z-20"}`}
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              onClick={() => setIsMenuOpen((prev) => !prev)}
+            <Magnetic
+              className={`relative ${!isProjectOpen ? "z-30" : "z-20"}`}
             >
-              <XIcon
-                weight="bold"
-                className={`absolute transition-all duration-300 ease-in-out ${
-                  isMenuOpen
-                    ? "rotate-0 scale-100 opacity-100"
-                    : "-rotate-90 scale-50 opacity-0 delay-800"
-                }`}
-              />
-              <ListIcon
-                weight="bold"
-                className={`absolute transition-all duration-300 ease-in-out ${
-                  isMenuOpen
-                    ? "rotate-90 scale-50 opacity-0"
-                    : "rotate-0 scale-100 opacity-100 delay-800"
-                }`}
-              />
-            </Button>
+              <Button
+                variant="outline"
+                size="icon-lg"
+                className="relative px-1!"
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                onClick={() => setIsMenuOpen((prev) => !prev)}
+              >
+                <XIcon
+                  weight="bold"
+                  className={`absolute transition-all duration-300 ease-in-out ${
+                    isMenuOpen
+                      ? "rotate-0 scale-100 opacity-100"
+                      : "-rotate-90 scale-50 opacity-0 delay-800"
+                  }`}
+                />
+                <ListIcon
+                  weight="bold"
+                  className={`absolute transition-all duration-300 ease-in-out ${
+                    isMenuOpen
+                      ? "rotate-90 scale-50 opacity-0"
+                      : "rotate-0 scale-100 opacity-100 delay-800"
+                  }`}
+                />
+              </Button>
+            </Magnetic>
           </div>
 
           {isProjectPage && !isMenuOpen && !isProjectOpen && (
@@ -101,6 +93,7 @@ const Navbar = ({ ready = true }: NavbarProps) => {
                   href={currentProject.github}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Open project source code on GitHub"
                   className={buttonVariants({
                     size: "icon-lg",
                   })}
@@ -108,33 +101,30 @@ const Navbar = ({ ready = true }: NavbarProps) => {
                   <GithubLogoIcon />
                 </a>
               )}
-              <a
-                onClick={(e) => scrollToAnchor(e, "introduction")}
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "lg",
-                })}
+              <Button
+                type="button"
+                variant="ghost"
+                size="lg"
+                onClick={() => scrollToAnchor("introduction")}
               >
                 Introduction
-              </a>
-              <a
-                onClick={(e) => scrollToAnchor(e, "key-points")}
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "lg",
-                })}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="lg"
+                onClick={() => scrollToAnchor("key-points")}
               >
                 4 points
-              </a>
-              <a
-                onClick={(e) => scrollToAnchor(e, "deeper-details")}
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "lg",
-                })}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="lg"
+                onClick={() => scrollToAnchor("deeper-details")}
               >
                 Deeper Details
-              </a>
+              </Button>
               {currentProject?.live && (
                 <a
                   href={currentProject.live}
@@ -146,7 +136,7 @@ const Navbar = ({ ready = true }: NavbarProps) => {
                   })}
                 >
                   Visit site
-                  <ArrowUpRightIcon className="group-hover:ml-0.5" />
+                  <ArrowUpRightIcon className="group-hover:translate-x-0.5 transition-transform" />
                 </a>
               )}
             </div>
@@ -167,30 +157,35 @@ const Navbar = ({ ready = true }: NavbarProps) => {
                 View Resume
               </a>
 
-              <Button
-                onClick={() => setIsProjectOpen((prev) => !prev)}
-                size="lg"
-                className={`w-32 ${!isMenuOpen ? "z-21" : ""}`}
-                variant={isProjectOpen ? "outline" : "default"}
+              <Magnetic
+                strength={isProjectOpen ? 0 : 0.5}
+                className={!isMenuOpen ? "z-30" : "z-20"}
               >
-                <XIcon
-                  weight="bold"
-                  className={`absolute transition-all duration-300 ease-in-out ${
-                    isProjectOpen
-                      ? "rotate-0 scale-100 opacity-100"
-                      : "-rotate-90 scale-50 opacity-0 delay-800"
-                  }`}
-                />
-                <span
-                  className={`absolute transition-all duration-300 ease-in-out ${
-                    isProjectOpen
-                      ? "scale-40 opacity-0"
-                      : "scale-100 opacity-100 delay-800"
-                  }`}
+                <Button
+                  onClick={() => setIsProjectOpen((prev) => !prev)}
+                  size="lg"
+                  className="w-32"
+                  variant={isProjectOpen ? "outline" : "default"}
                 >
-                  Got a Project?
-                </span>
-              </Button>
+                  <XIcon
+                    weight="bold"
+                    className={`absolute transition-all duration-300 ease-in-out ${
+                      isProjectOpen
+                        ? "rotate-0 scale-100 opacity-100"
+                        : "-rotate-90 scale-50 opacity-0 delay-800"
+                    }`}
+                  />
+                  <span
+                    className={`absolute transition-all duration-300 ease-in-out ${
+                      isProjectOpen
+                        ? "scale-40 opacity-0"
+                        : "scale-100 opacity-100 delay-800"
+                    }`}
+                  >
+                    Got a Project?
+                  </span>
+                </Button>
+              </Magnetic>
             </div>
           </div>
         </div>

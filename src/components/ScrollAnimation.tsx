@@ -3,17 +3,17 @@
 import { useRef } from "react";
 import GridAnimation from "./GridAnimation";
 
-interface PartnersAnimationProps {
+interface ScrollAnimationProps {
   ready?: boolean;
 }
 
-const PartnersAnimation = ({ ready = true }: PartnersAnimationProps) => {
+const ScrollAnimation = ({ ready = true }: ScrollAnimationProps) => {
   const partnerRef = useRef<HTMLElement>(null);
 
   return (
     <section
       ref={partnerRef}
-      className="h-screen w-full flex-center items-end overflow-hidden bg-background"
+      className="relative z-1 h-screen w-full flex-center items-end overflow-hidden bg-background"
     >
       {/* V-shape grid animation — full height behind everything */}
       <div className="absolute inset-0 z-2">
@@ -28,4 +28,4 @@ const PartnersAnimation = ({ ready = true }: PartnersAnimationProps) => {
   );
 };
 
-export default PartnersAnimation;
+export default ScrollAnimation;
