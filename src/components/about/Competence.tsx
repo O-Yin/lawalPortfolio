@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { COMPETENCIES } from "@/app/constants/competencies";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -31,6 +32,7 @@ export default function Competence() {
           scrollTrigger: {
             trigger: ".competency-grid",
             start: "top 80%",
+            // toggleActions: "play none none reverse",
           },
         },
       );
@@ -43,18 +45,13 @@ export default function Competence() {
       {/* ── Skills Grid ── */}
       <section className="flex-center">
         <div className="wrapper pb-30 flex flex-col gap-13.5 text-foreground/40">
-          <div className="flex flex-col gap-1 max-w-lg">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              What I do
-            </p>
-            <h2 className="bold-title leading-tight text-primary">
-              My&nbsp;Competence
-            </h2>
-            <p className="text-sm leading-loose mt-2">
-              A deliberate stack of skills built to ship robust, performant, and
-              accessible digital products end to end.
-            </p>
-          </div>
+          <SectionHeader
+            subtitle="What I do"
+            title="My Competence"
+            description="A deliberate stack of skills built to ship robust, performant, and accessible digital products end to end."
+            className="max-w-[68ch]"
+            descriptionClassName="max-w-xl"
+          />
 
           {/* Skill cards — Mist aesthetic */}
           <div className="competency-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
