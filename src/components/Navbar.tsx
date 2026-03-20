@@ -184,7 +184,7 @@ const Navbar = ({ ready = true }: NavbarProps) => {
                         : "scale-100 opacity-100 delay-800"
                     }`}
                   >
-                    <HoverPushText>Got a Project?</HoverPushText>
+                    Got a Project?
                   </span>
                 </Button>
               </Magnetic>
