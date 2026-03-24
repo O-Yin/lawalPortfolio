@@ -157,7 +157,7 @@ export const PROJECTS: Project[] = [
     category: "AI Assistant",
     description:
       "LinkedIn Intelligent Assistant — an AI-powered tool designed to supercharge your LinkedIn presence. LIA automates content creation, engagement strategies, and networking outreach, helping professionals build meaningful connections and grow their personal brand effortlessly.",
-    image: "/projects/my_projects.jpeg",
+    image: "/projects/lia/lia_laptop_mockup.jpeg",
     github: "https://github.com/TenacityVentures/Lia",
     live: "https://www.getlia.live",
     keypoints: [
@@ -166,7 +166,32 @@ export const PROJECTS: Project[] = [
       "Developed intelligent outreach engine to facilitate meaningful career connections",
       "Integrated performance tracking analytics for measuring LinkedIn profile impact",
     ],
-    deeperDetails: placeholderDetails,
+    deeperDetails: [
+      {
+        image: "/projects/lia/lia_laptop_mockup.jpeg",
+        title: "AI Content Generation",
+        description:
+          "Developed a sophisticated AI pipeline using various AI models to generate high-engagement LinkedIn posts, allowing users to maintain a professional presence with minimal effort.",
+      },
+      {
+        image: "/projects/lia/lia_extension.png",
+        title: "Smart Engagement",
+        description:
+          "Implemented an intelligent reply system that analyzes thread context to craft thoughtful, relevant comments, fostering meaningful professional discussions and growth.",
+      },
+      {
+        image: "/projects/lia/lia_mockup_light.png",
+        title: "Seamless Integration",
+        description:
+          "Engineered a robust Chrome Extension using React 19 and Vite, featuring a native-feel side panel and content script injections for a friction-less LinkedIn workflow.",
+      },
+      {
+        image: "/projects/lia/lia_landing_page.png",
+        title: "Full-Stack Ecosystem",
+        description:
+          "Built a modern architecture with a Next.js landing page and a dedicated API server, leveraging Tailwind CSS 4 for a premium, responsive user interface.",
+      },
+    ],
     featured: true,
   },
   {
