@@ -21,6 +21,7 @@ import {
 import type { Icon } from "@phosphor-icons/react";
 import { buttonVariants } from "./ui/button";
 import Magnetic from "./ui/Magnetic";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 interface FooterProps {
   className?: string;
@@ -66,6 +67,7 @@ function Footer({ className }: FooterProps) {
   const { isSE, zFold } = useWindowDimensions();
   const pathname = usePathname();
   const router = useRouter();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useGSAP(
     () => {
@@ -172,11 +174,16 @@ function Footer({ className }: FooterProps) {
   // Ensure footer is fully revealed when tabbing into it
   useEffect(() => {
     const handleFocusIn = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (footerRef.current?.contains(target)) {
-        window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: "smooth",
+      const target = e.target as HTMLElement | null;
+      const previousTarget = e.relatedTarget as Node | null;
+      if (
+        target &&
+        footerRef.current?.contains(target) &&
+        !footerRef.current.contains(previousTarget)
+      ) {
+        target.scrollIntoView({
+          block: "nearest",
+          behavior: prefersReducedMotion ? "auto" : "smooth",
         });
       }
     };
