@@ -8,6 +8,12 @@ import ExploreProjects from "@/components/project/ExploreProjects";
 import ContactsRef from "@/components/ContactsRef";
 import { Metadata } from "next";
 
+function isValidISODate(value?: string): value is string {
+  if (!value) return false;
+  if (!/^\d{4}(-\d{2}(-\d{2}(T.+)?)?)?$/.test(value)) return false;
+  return Number.isFinite(Date.parse(value));
+}
+
 export async function generateStaticParams() {
   return PROJECTS.map((project) => ({
     slug: project.slug,
@@ -49,8 +55,12 @@ export async function generateMetadata({
           alt: `${project.name} — ${project.category}`,
         },
       ],
-      ...(project.startDate && { publishedTime: project.startDate }),
-      ...(project.endDate && { modifiedTime: project.endDate }),
+      ...(isValidISODate(project.startDate) && {
+        publishedTime: project.startDate,
+      }),
+      ...(isValidISODate(project.endDate) && {
+        modifiedTime: project.endDate,
+      }),
       authors: [BRAND.url],
     },
     twitter: {
