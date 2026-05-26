@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const projectRoutes: MetadataRoute.Sitemap = PROJECTS.map((project) => ({
     url: `${BRAND.url}/projects/${project.slug}`,
-    lastModified: project.endDate ? new Date(project.endDate) : now,
+    lastModified: now,
     changeFrequency: "yearly",
     priority: project.featured ? 0.9 : 0.7,
   }));
