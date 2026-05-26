@@ -18,11 +18,15 @@ export default function FaqJsonLd({ items = FAQS }: FaqJsonLdProps) {
     })),
   };
 
+  // Escape `<` so substrings like `</script`, `<script`, or `<!--` in the
+  // serialized JSON cannot break out of the surrounding <script> tag.
+  const safeJson = JSON.stringify(schema).replace(/</g, "\\u003c");
+
   return (
     // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD must be injected as raw text in an ld+json script tag.
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: safeJson }}
     />
   );
 }
