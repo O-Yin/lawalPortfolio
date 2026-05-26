@@ -153,6 +153,7 @@ export default function Faqs({
                   id={panelId}
                   role="region"
                   aria-labelledby={buttonId}
+                  aria-hidden={!isOpen}
                   className={cn(
                     "grid transition-[grid-template-rows,opacity] duration-400 ease-out",
                     isOpen
