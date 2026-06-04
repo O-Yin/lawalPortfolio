@@ -391,7 +391,7 @@ export const PROJECTS: Project[] = [
           "Established a reverent, unhurried digital magazine aesthetic. Copy is set in long measure with DM Serif Display headings and gold italic display accents to represent the sisterhood's sacred values.",
       },
       {
-        image: "/projects/acw/acw_imapct.png",
+        image: "/projects/acw/acw_impact.png",
         title: "Pillars of Impact & Service",
         description:
           "Created structured, asymmetric layouts detailing the movement's focus areas, combining custom icons and micro-interactions to guide visitors through community outreach and leadership programs.",
