@@ -1,6 +1,25 @@
 import type { MetadataRoute } from "next";
 import { BRAND } from "./constants";
 
+const AI_CRAWLERS = [
+  "GPTBot",
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "ClaudeBot",
+  "Claude-Web",
+  "anthropic-ai",
+  "PerplexityBot",
+  "Perplexity-User",
+  "Google-Extended",
+  "Applebot",
+  "Applebot-Extended",
+  "Bytespider",
+  "Amazonbot",
+  "cohere-ai",
+  "Meta-ExternalAgent",
+  "CCBot",
+];
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
@@ -9,10 +28,11 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/api/", "/private/"],
       },
-      {
-        userAgent: ["GPTBot", "ClaudeBot", "CCBot", "anthropic-ai", "Google-Extended"],
+      ...AI_CRAWLERS.map((userAgent) => ({
+        userAgent,
         allow: "/",
-      },
+        disallow: ["/api/", "/private/"],
+      })),
     ],
     sitemap: `${BRAND.url}/sitemap.xml`,
     host: BRAND.url,
