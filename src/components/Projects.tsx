@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
@@ -30,12 +30,13 @@ function Projects() {
   const router = useRouter();
   const { prefersReducedMotion, isHydrated } = usePrefersReducedMotion();
 
-  // Custom "View Project" cursor only on precise pointers that allow motion.
-  // Gated on isHydrated, so matchMedia only runs client-side (no SSR mismatch).
-  const cursorEnabled =
-    isHydrated &&
-    !prefersReducedMotion &&
-    !window.matchMedia("(pointer: coarse)").matches;
+  const cursorEnabled = useMemo(
+    () =>
+      isHydrated &&
+      !prefersReducedMotion &&
+      !window.matchMedia("(pointer: coarse)").matches,
+    [isHydrated, prefersReducedMotion],
+  );
 
   const openActiveProject = useCallback(() => {
     const slug = FEATURED_PROJECTS[indexRef.current]?.slug;
